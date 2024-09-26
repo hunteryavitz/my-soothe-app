@@ -16,7 +16,9 @@
 
 package com.codelab.basiclayouts
 
+import android.content.res.Configuration
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.DrawableRes
@@ -61,12 +63,12 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
-import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -75,16 +77,13 @@ import com.codelab.basiclayouts.ui.theme.MySootheTheme
 import java.util.Locale
 
 class MainActivity : ComponentActivity() {
-    @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            val windowSize = calculateWindowSizeClass(this)
-            MySootheApp(windowSize) }
+            MySootheApp() }
     }
 }
 
-// Step: Search bar - Modifiers
 @Composable
 fun SearchBar(
     modifier: Modifier = Modifier
@@ -108,7 +107,6 @@ fun SearchBar(
     )
 }
 
-// Step: Align your body - Alignment
 @Composable
 fun AlignYourBodyElement(
     @DrawableRes image: Int,
@@ -135,7 +133,6 @@ fun AlignYourBodyElement(
     }
 }
 
-// Step: Favorite collection card - Material Surface
 @Composable
 fun FavoriteCollectionCard(
     @DrawableRes image: Int,
@@ -167,7 +164,6 @@ fun FavoriteCollectionCard(
     }
 }
 
-// Step: Align your body row - Arrangements
 @Composable
 fun AlignYourBodyRow(
     modifier: Modifier = Modifier
@@ -183,7 +179,6 @@ fun AlignYourBodyRow(
     }
 }
 
-// Step: Favorite collections grid - LazyGrid
 @Composable
 fun FavoriteCollectionsGrid(
     modifier: Modifier = Modifier
@@ -201,7 +196,6 @@ fun FavoriteCollectionsGrid(
     })
 }
 
-// Step: Home section - Slot APIs
 @Composable
 fun HomeSection(
     @StringRes title: Int,
@@ -220,7 +214,6 @@ fun HomeSection(
     }
 }
 
-// Step: Home screen - Scrolling
 @Composable
 fun HomeScreen(modifier: Modifier = Modifier) {
     Column(modifier = modifier.verticalScroll(rememberScrollState())) {
@@ -236,7 +229,6 @@ fun HomeScreen(modifier: Modifier = Modifier) {
     }
 }
 
-// Step: Bottom navigation - Material
 @Composable
 private fun SootheBottomNavigation(modifier: Modifier = Modifier) {
     NavigationBar(
@@ -276,7 +268,6 @@ private fun SootheBottomNavigation(modifier: Modifier = Modifier) {
     }
 }
 
-// Step: MySoothe App - Scaffold
 @Composable
 fun MySootheAppPortrait() {
     Scaffold(
@@ -286,7 +277,6 @@ fun MySootheAppPortrait() {
     }
 }
 
-// Step: Bottom navigation - Material
 @Composable
 private fun SootheNavigationRail(modifier: Modifier = Modifier) {
     NavigationRail(
@@ -333,7 +323,6 @@ private fun SootheNavigationRail(modifier: Modifier = Modifier) {
     }
 }
 
-// Step: Landscape Mode
 @Composable
 fun MySootheAppLandscape(){
     Surface(color = MaterialTheme.colorScheme.background) {
@@ -344,19 +333,16 @@ fun MySootheAppLandscape(){
     }
 }
 
-// Step: MySoothe App
 @Composable
-fun MySootheApp(windowSize: WindowSizeClass) {
-    when (windowSize.widthSizeClass) {
-        WindowWidthSizeClass.Compact ->
+fun MySootheApp() {
+    val configuration = LocalConfiguration.current
+    Log.d(">>>", "MySootheApp: orientation = ${configuration.orientation}")
+    when (configuration.orientation) {
+        Configuration.ORIENTATION_PORTRAIT ->
             MySootheAppPortrait()
-        WindowWidthSizeClass.Expanded ->
+        Configuration.ORIENTATION_LANDSCAPE ->
             MySootheAppLandscape()
-    }
-    Scaffold(
-        bottomBar = { SootheBottomNavigation() },
-        ) { padding ->
-        HomeScreen(Modifier.padding(padding))
+        else -> MySootheAppPortrait()
     }
 }
 
@@ -473,9 +459,5 @@ fun MySootheLandscapePreview() {
 @Preview(showBackground = true, backgroundColor = 0xFFF5F0EE)
 @Composable
 fun MySootheAppPreview() {
-    MySootheApp(windowSize = WindowSizeClass(WindowWidthSizeClass.Expanded))
-}
-
-fun WindowSizeClass(widthSizeClass: WindowWidthSizeClass): WindowSizeClass {
-    return WindowSizeClass(widthSizeClass = widthSizeClass)
+    MySootheApp()
 }
